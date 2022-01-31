@@ -8,11 +8,16 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    jmonkeyengine_version = '[3.1,)'
+}
+
 dependencies {
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13.2'
 
-    // This dependency is used by the application.
+    implementation "org.jmonkeyengine:jme3-core:$jmonkeyengine_version"
+    implementation "org.jmonkeyengine:jme3-lwjgl3:$jmonkeyengine_version"
     implementation 'com.google.guava:guava:30.1.1-jre'
 }
 

@@ -3,12 +3,61 @@
  */
 package jmesystemtestexample;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
+import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AppState;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
+
+public class App extends SimpleApplication {
+
+    // A real application wouldn't just dump these in the SimpleApplication. This is a minimal example
+    Vector3f boxPosition = new Vector3f(0,0,0);
+    Vector3f boxVelocity = new Vector3f(0,0,0);
+    Geometry boxGeometry;
+
+    public boolean hasBeenInitialised = false;
+
+    public static void main(String[] args){
+        App app = new App();
+        app.start(); // start the game
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public App(AppState... initialStates){
+        super(initialStates);
     }
+
+    @Override
+    public void simpleUpdate(float tpf){
+        super.simpleUpdate(tpf);
+        boxPosition = boxPosition.add(boxVelocity.mult(tpf));
+
+        boxGeometry.setLocalTranslation(boxPosition);
+    }
+
+    public void setBoxVelocity(Vector3f boxVelocity){
+        this.boxVelocity = boxVelocity;
+    }
+
+    public Vector3f getBoxPosition(){
+        return boxPosition;
+    }
+
+    @Override
+    public void simpleInitApp() {
+        stateManager.attach(new TestDriver());
+
+        Box b = new Box(1, 1, 1);
+        boxGeometry = new Geometry("Box", b);
+        Material mat = new Material(assetManager,
+                "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        boxGeometry.setMaterial(mat);
+        rootNode.attachChild(boxGeometry);
+
+        hasBeenInitialised = true;
+    }
+
 }
