@@ -18,7 +18,11 @@ import java.util.function.Function;
  */
 public class TestDriver extends BaseAppState{
 
-    private static Executor executor = Executors.newSingleThreadExecutor();
+    private static Executor executor = Executors.newSingleThreadExecutor( (r) -> {
+        Thread thread = new Thread(r);
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private CopyOnWriteArrayList<InAppEvent> actOnTickQueue = new CopyOnWriteArrayList<>();
 
@@ -51,6 +55,9 @@ public class TestDriver extends BaseAppState{
         } );
     }
 
+    /**
+     * Obtains some object from the application within the update tick. Blocks until the object is obtained
+     */
     public <T> T getOnTick(Function<App, T> obtainFunction){
         List<T> mutable = new ArrayList<>();
 
@@ -67,6 +74,10 @@ public class TestDriver extends BaseAppState{
         return mutable.get(0);
     }
 
+    /**
+     * Pauses the test until the specified time has elapsed
+     * @param timeToWait
+     */
     public void waitFor(double timeToWait){
         Object waitObject = new Object();
         actOnTickQueue.add(new InAppEvent((app) -> {}, timeToWait, waitObject));
